@@ -294,6 +294,32 @@ define(
          }
       }
 
+      toTopChapter(){
+         this.config.repeatCountCurrent = 1;
+         this.config.chapter = 1;
+         if (this.config.articleType === ArticleType.word)  // 1. ArticleType.word
+         {
+            this.arrayWordDisplaying = this.arrayWordAll.slice(0, this.config.count * this.config.chapter); // 截取当前需要显示的数组段
+            let arrayCurrentWord = this.arrayWordDisplaying.map(item => {
+               return item.word
+            }); // 取到英文，数组
+            this.currentWords = arrayCurrentWord.join(' ');
+         } else if (this.config.articleType === ArticleType.phrase) // 2. ArticleType.phrase
+         {
+            this.arrayWordDisplaying = this.arrayWordAll.slice(0, this.config.count * this.config.chapter); // 截取当前需要显示的数组段
+            this.currentWords = this.arrayWordDisplaying.join(' ');
+         } else  // 3. ArticleType.others
+         {
+            this.currentWords = this.currentOriginWords.slice(0, this.config.count * this.config.chapter).join('');
+         }
+         this.reset();
+         this.config.save();
+      }
+      toEndChapter(){
+         this.config.chapter = this.config.chapterTotal - 1
+         this.nextChapter()
+      }
+
       // 自定义文章
       customizeArticle(){
          $('#app').style.overflow = 'hidden'
@@ -788,14 +814,10 @@ define(
             let minute = Math.floor(secondAll / 60);
             let second = Math.floor(secondAll % 60);
             $('.minute').innerText = minute >= 10 ? minute : `0${minute}`;
-            $('.btn-minute').innerText = minute >= 10 ? minute : `0${minute}`;
             $('.second').innerText = second >= 10 ? second : `0${second}`;
-            $('.btn-second').innerText = second >= 10 ? second : `0${second}`;
          } else {
             $('.minute').innerText     = '00';
-            $('.btn-minute').innerText = '00';
             $('.second').innerText     = '00';
-            $('.btn-second').innerText = '00';
          }
       }
 
@@ -1022,20 +1044,24 @@ define(
 
          // SPEED
          if (!this.isStarted && !this.isFinished) {
-            $('.speed').innerText               = '--';
-            $('.btn-speed').innerText           = '--';
+            $('.speed-info-pc .speed').innerText               = '--';
+            $('.speed-info-mobile .speed').innerText               = '--';
             $('.count-key-rate').innerText      = '--';
+            $('.speed-info-mobile .count-key-rate').innerText      = '--';
             $('.count-key-length').innerText    = '--';
+            $('.speed-info-mobile .count-key-length').innerText    = '--';
             $('.count-key-backspace').innerText = '--';
+            $('.speed-info-mobile .count-key-backspace').innerText = '--';
          } else {
             this.record.speed = Number((this.correctWordsCount / this.duration * 1000 * 60).toFixed(2));
-            $('.speed').innerText = this.record.speed;
-            $('.btn-speed').innerText = this.record.speed;
+            $('.speed-info-pc .speed').innerText = this.record.speed;
+            $('.speed-info-mobile .speed').innerText = this.record.speed;
 
             // key count
             let allKeyCount = this.keyCount.all - this.keyCount.function;
             this.record.hitRate = Number((allKeyCount / this.duration * 1000).toFixed(2));
-            $('.count-key-rate').innerText = this.record.hitRate;
+            $('.speed-info-pc .count-key-rate').innerText = this.record.hitRate;
+            $('.speed-info-mobile .count-key-rate').innerText = this.record.hitRate;
 
             // code length
             if (this.correctWordsCount) {
@@ -1043,10 +1069,12 @@ define(
             } else {
                this.record.codeLength = 0;
             }
-            $('.count-key-length').innerText = this.record.codeLength;
+            $('.speed-info-pc .count-key-length').innerText = this.record.codeLength;
+            $('.speed-info-mobile .count-key-length').innerText = this.record.codeLength;
 
             // backspace count
-            $('.count-key-backspace').innerText = this.keyCount.backspace;
+            $('.speed-info-pc .count-key-backspace').innerText = this.keyCount.backspace;
+            $('.speed-info-mobile .count-key-backspace').innerText = this.keyCount.backspace;
 
             // StandAlone Mode Speed Info
             $('.standalone-speed-info .speed').innerText = this.record.speed;
